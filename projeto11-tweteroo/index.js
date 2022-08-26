@@ -7,24 +7,30 @@ server.use(cors());
 server.use(express.json());
 
 let usuario = [];
-let twits = [];
+let tweets = [];
 
 server.post('/sign-up', (req, res) =>{
 	usuario = [...usuario, req.body];
+	console.log(usuario);
 	res.send('OK');
 })
 
 server.post('/tweets', (req, res) =>{
-	console.log(req.body);
-	twits = [...twits, req.body];
-	console.log(twits);
+
+	const avatar = usuario.find((value) => value.username === req.body.username) 
+	const twiti = req.body;
+	
+
+	 twiti.avatar = avatar.avatar;
+	 tweets = [...tweets, twiti];
+	 console.log(tweets);
 	res.send('OK');
 })
 
 server.get('/tweets', (req, res) =>{
-	if(twits.length >= 10){
-    	res.send(twits.slice(twits.length -10));
-	} else res.send(twits);
+	if(tweets.length >= 10){
+    	res.send(tweets.slice(tweets.length -10));
+	} else res.send(tweets);
 })
 
 
