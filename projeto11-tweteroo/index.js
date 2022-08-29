@@ -6,15 +6,7 @@ const server = express();
 server.use(cors());
 server.use(express.json());
 
-let usuario = [{
-    	username: "bobesponja",
-		avatar: "https://super.abril.com.br/wp-content/uploads/2020/09/04-09_gato_SITE.jpg?quality=70&strip=info"
-		},
-		{
-		username: "patrick",
-		avatar: "https://super.abril.com.br/wp-content/uploads/2020/09/04-09_gato_SITE.jpg?quality=70&strip=info"
-		}
-	];
+let usuario = [];
 let tweets = [];
 // API DE LOGIN
 server.post('/sign-up', (req, res) =>{
@@ -29,15 +21,16 @@ server.post('/sign-up', (req, res) =>{
 
 // API QUE ARMAZENA OS TWEETS DE TODOS OS USUÁRIOS
 server.post('/tweets', (req, res) =>{
-	if (!req.headers.username || !req.body.tweet){
+	console.log(req.headers.user)
+	if (!req.headers.user || !req.body.tweet){
 		return res.status(400).send('Todos os Campos são obrigatórios!');
 	}
 
-	const avatar = usuario.find((value) => value.username === req.headers.username) 
+	const avatar = usuario.find((value) => value.username === req.headers.user) 
 	const twiti = req.body;
 	
 	 twiti.avatar = avatar.avatar;
-	 twiti.username = req.headers.username;
+	 twiti.username = req.headers.user;
 	 tweets = [...tweets, twiti];
 	 console.log(tweets);
 	res.status(201).send('OK');
@@ -45,18 +38,23 @@ server.post('/tweets', (req, res) =>{
 
 // API DE RESPONDE COM OS TWEETS DE TODOS OS USUÁRIOS
 server.get('/tweets', (req, res) =>{
-	
-	if (req.query.USERNAME){
-		const { USERNAME } = req.query;
-		let tweetsDoUsuario = tweets.filter((value) => value.username === USERNAME);
-		return res.send(tweetsDoUsuario);
+console.log(req.query.username)
+	if (req.query.username){
+		
+		const { username ,page } = req.query;
+		let tweetsDoUsuario = tweets.filter((value) => value.username === username);
+		console.log('inicio' + tweets);
+		console.log('tam maior que 10')
+		return res.send(tweets.slice(tweets.length-(10*page), tweets.length-(10*(page-1))));
 		
 	}
 	if(tweets.length >= 10){
-    	res.send(tweets.slice(tweets.length -10));
+		const { page } = req.query;
+		console.log(page);
+    	res.send(tweets.slice(tweets.length-(10*page), tweets.length-(10*(page-1))));
+		
 	} else res.send(tweets);
 })
-
 
 
 server.listen(5000, () => console.log('listen on 5000'));
