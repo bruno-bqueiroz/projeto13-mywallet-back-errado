@@ -93,11 +93,11 @@ server.post('/registros', async (req, res)=>{
             email: retorno.email,
             valor,
             descricao,
+            type: "entrada",
             date: dayjs().format('DD/MM')
         });
         console.log(user)
         res.status(201).send(user);
-
     } catch (error) {
         console.log(error);
     }
@@ -120,7 +120,7 @@ server.get('/registros', async (req, res) =>{
         
 
         const result = await db.collection('registros').find({
-            
+            email:retorno.email
         }).toArray();
 
         const registros = await result.filter((value)=> {
