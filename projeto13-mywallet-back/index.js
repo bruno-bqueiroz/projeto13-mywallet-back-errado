@@ -45,6 +45,7 @@ server.post ('/cadastro', async (req, res) =>{
 server.post ('/', async(req, res) =>{
 
     const { email, password } = req.body;
+    
     try {
         const user = await db.collection('users').findOne({
           email,
@@ -116,7 +117,6 @@ server.post('/registrodesaida', async (req, res) =>{
         const retorno = await user.find((value) => value.token === token)
         const saldo  = await db.collection('saldo').find({email: retorno.email}).toArray();
         console.log(saldo[0].valor);
-
         const novoSaldo = saldo[0].valor-parseInt(valor);
         if (!retorno){
             console.log(token);
@@ -157,13 +157,15 @@ server.get('/registros', async (req, res) =>{
         if (!retorno){
             return res.status(404).send('Usuário não encontrado');
         }
+
+
         console.log(retorno.email);
         const result = await db.collection('registros').find({
             email:retorno.email
         }).toArray();
 
-
-        const extrato = [ valor, result ];
+        let extrato = valor;
+        extrato = [ ...extrato, result];
 
         res.send(extrato);
     } catch (error) {
